@@ -46,4 +46,4 @@ def add_new_patient(username, patient):
     :param patient an object of patient class
     
     """
-    collection.delete_one({'username': username}, {'$push': {'patients': patient}})
+    collection.update_one({'username': username}, {'$push': {'patients': patient}})
