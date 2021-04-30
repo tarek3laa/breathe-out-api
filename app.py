@@ -1,6 +1,6 @@
-from flask import Flask, request, json, flash
+from flask import Flask, request, json, flash, jsonify
 
-from data_model import Doctor
+from data_model import *
 from mongo import *
 
 app = Flask(__name__)
@@ -10,39 +10,30 @@ app = Flask(__name__)
 def sign_up():
     #  check the email,username & number are unique
     data = json.loads(request.data)
-    print(data)
     doctor = Doctor.from_json(data)
-    print(doctor.to_json())
     if get_count('phone_number', doctor.phone_number) == 0 and \
             get_count('email', doctor.email) == 0 and \
             get_count('username', doctor.username) == 0:
-        print('nice')
         insert_new_doctor(doctor)
+        jsonify({'msg': 'done', 'code': 200})
     else:
-        print('shit')
-        # flash('Email already exists.', category='error')
-    return '200'
+        return jsonify({'msg': 'Email already exists.', 'code': 403})
 
 
-@app.route('/signin', methods=['post', 'get'])
+@app.route('/signin', methods=['post'])
 def sign_in():
-    # todo(1) read the json request ..... hint :the json will be like that {'username':value,'password':value}
-    # todo(3) check the username & password are correct
-    # todo(4) return doctor object as a json
-
-    if request.method == 'post':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        doctor = get_doctor_by('username', username)
+    data = json.loads(request.data)
+    if get_count('username', data['username']) != 0:
+        doctor = get_doctor_by('username', data['username'])
         if doctor is not None:
-            if doctor.password == password:
-                return doctor.to_json()
+            if doctor.password == data['password']:
+                return jsonify(doctor.to_json())
             else:
-                flash('password incorrect!', category='error')
+                return jsonify({'msg': 'password incorrect', 'code': 402})
         else:
-            flash('username does not exist.', category='error')
+            return jsonify({'msg': 'username does not exist.', 'code': 401})
     else:
-        return 'hello world'
+        return jsonify({'msg': 'username does not exist.', 'code': 401})
 
 
 if __name__ == '_main_':
