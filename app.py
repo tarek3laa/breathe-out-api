@@ -35,7 +35,7 @@ def sign_in():
     else:
         return jsonify({'msg': 'username does not exist.', 'code': 401})
 
-@staticmethod
+@staticmethodm
 def from_json(data):
     username = data['username']
     name = data['name']
@@ -57,3 +57,7 @@ def from_json(data):
 
 if __name__ == '_main_':
     app.run()
+
+
+
+
