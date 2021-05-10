@@ -35,6 +35,24 @@ def sign_in():
     else:
         return jsonify({'msg': 'username does not exist.', 'code': 401})
 
+@staticmethod
+def from_json(data):
+    username = data['username']
+    name = data['name']
+    phone_number = data['phone_number']
+    status = data['status']
+    gender = data['gender']
+    first_fvc = data['first_fvc']
+    age = data['age']
+    first_fvc_date = data['first_fvc_date']
+    registered_date = data['registered_date']
+    xRay_Url = data['xRay_Url']
+    CT_Url = data['CT_Url']
+    CT_date = data['CT_date ']
+    address = data['address']
+    return Patient(name, phone_number, status, gender, age, first_fvc, first_fvc_date, registered_date, xRay_Url,
+               CT_Url, CT_date, address)
+    return Doctor(username)
 
 if __name__ == '_main_':
     app.run()
