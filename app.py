@@ -1,5 +1,5 @@
 from flask import Flask, request, json, flash, jsonify
-
+import bcrypt
 from data_model import *
 from mongo import *
 
@@ -11,13 +11,19 @@ def sign_up():
     #  check the email,username & number are unique
     data = json.loads(request.data)
     doctor = Doctor.from_json(data)
-    if get_count('phone_number', doctor.phone_number) == 0 and \
-            get_count('email', doctor.email) == 0 and \
-            get_count('username', doctor.username) == 0:
-        insert_new_doctor(doctor)
-        jsonify({'msg': 'done', 'code': 200})
+    if get_count('email', doctor.email) != 0:
+        return jsonify({'msg': 'Email and already exists.', 'code': 403})
+    elif get_count('username', doctor.username) != 0:
+        return jsonify({'msg': 'username and already exists.', 'code': 403})
+
+    elif get_count('phone_number', doctor.phone_number) != 0:
+        return jsonify({'msg': 'phone number and already exists.', 'code': 403})
+
     else:
-        return jsonify({'msg': 'Email already exists.', 'code': 403})
+        hashed = bcrypt.hashpw(bytes(doctor.password, 'utf-8'), bcrypt.gensalt())
+        doctor.password = hashed
+        insert_new_doctor(doctor)
+        return jsonify({'msg': 'done', 'code': 200})
 
 
 @app.route('/signin', methods=['post'])
@@ -26,14 +32,31 @@ def sign_in():
     if get_count('username', data['username']) != 0:
         doctor = get_doctor_by('username', data['username'])
         if doctor is not None:
-            if doctor.password == data['password']:
-                return jsonify(doctor.to_json())
+            if bcrypt.checkpw(bytes(data['password'], 'utf-8'), doctor['password']):
+                doctor = Doctor.from_json(doctor)
+                return jsonify({'code': 200, 'content': doctor.to_json()})
             else:
                 return jsonify({'msg': 'password incorrect', 'code': 402})
         else:
             return jsonify({'msg': 'username does not exist.', 'code': 401})
     else:
         return jsonify({'msg': 'username does not exist.', 'code': 401})
+
+
+@app.route('/upload_files/<username>/<phone>', methods=['post'])
+def upload_file(username, phone):
+    for r in request.files.values():
+        r.save(r.filename)
+
+    return jsonify({'code': 200})
+
+
+@app.route('/add_new_patient/<username>', methods=['post'])
+def add_patient(username):
+    data = json.loads(request.data)
+    print(data)
+    add_new_patient(username, Patient.from_json(data))
+    return jsonify({'code': 200})
 
 
 if __name__ == '_main_':

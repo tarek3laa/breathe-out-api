@@ -1,6 +1,20 @@
 import json
 
 
+def patients_to_json(patients):
+    res = []
+    for patient in patients:
+        res.append(patient.to_json())
+    return res
+
+
+def patients_from_json(patients):
+    res = []
+    for patient in patients:
+        res.append(Patient.from_json(patient))
+    return res
+
+
 class Doctor:
 
     def __init__(self, name, email, username, phone_number, password, plan, patients):
@@ -19,21 +33,22 @@ class Doctor:
         email = data['email']
         username = data['username']
         phone_number = data['phone_number']
-        password = data['password']
+        # password = data['password']
         plan = data['plan']
-        patients = data['patients']
-        return Doctor(name, email, username, phone_number, password, plan, patients)
+        patients = patients_from_json(data['patients'])
+        return Doctor(name, email, username, phone_number, "", plan, patients)
 
     def to_json(self, ):
         # code that map from object into json(dict)
         doctor = {
+            'registered_date': self.registered_date,
             'name': self.name,
             'email': self.email,
             'username': self.username,
             'phone_number': self.phone_number,
             'password': self.password,
             'plan': self.plan,
-            'patients': self.patients,
+            'patients': patients_to_json(self.patients),
         }
         return doctor
 
@@ -66,14 +81,24 @@ class Patient:
         phone_number = data['phone_number']
         status = data['status']
         gender = data['gender']
-        first_fvc = data['first_fvc']
         age = data['age']
-        first_fvc_date = data['first_fvc_date']
-        registered_date = data['registered_date']
-        xRay_Url = data['xRay_Url']
-        CT_Url = data['CT_Url']
-        CT_date = data['CT_date ']
         address = data['address']
+        registered_date = data['registered_date']
+        try:
+            first_fvc = data['first_fvc']
+            first_fvc_date = data['first_fvc_date']
+            xRay_Url = data['xRay_Url']
+            CT_Url = data['CT_Url']
+            CT_date = data['CT_date ']
+
+        except:
+            first_fvc = None
+            first_fvc_date = None
+            registered_date = None
+            xRay_Url = None
+            CT_Url = None
+            CT_date = None
+
         return Patient(name, phone_number, status, gender, age, first_fvc, first_fvc_date, registered_date, xRay_Url,
                        CT_Url, CT_date, address)
 
