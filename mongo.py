@@ -46,4 +46,12 @@ def add_new_patient(username, patient):
     :param patient an object of patient class
     
     """
-    collection.update_one({'username': username}, {'$push': {'patients': patient}})
+    collection.update_one({'username': username}, {'$push': {'patients': patient.to_json()}})
+
+
+def get_patient(user_name, phone_number):
+    doctor = get_doctor_by('username', user_name)
+    doctor = Doctor.from_json(doctor)
+    for patient in doctor.patients:
+        if patient.phone_number == phone_number:
+            return patient
