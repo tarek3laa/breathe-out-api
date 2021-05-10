@@ -50,9 +50,10 @@ def from_json(data):
     CT_Url = data['CT_Url']
     CT_date = data['CT_date ']
     address = data['address']
-    return Patient(name, phone_number, status, gender, age, first_fvc, first_fvc_date, registered_date, xRay_Url,
+    return Patient(username,name, phone_number, status, gender, age, first_fvc,
+                   first_fvc_date, registered_date, xRay_Url,
                CT_Url, CT_date, address)
-    return Doctor(username)
+
 
 if __name__ == '_main_':
     app.run()
