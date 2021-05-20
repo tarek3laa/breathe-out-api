@@ -12,6 +12,7 @@ def patients_from_json(patients):
     res = []
     for patient in patients:
         res.append(Patient.from_json(patient))
+
     return res
 
 
@@ -33,15 +34,15 @@ class Doctor:
         email = data['email']
         username = data['username']
         phone_number = data['phone_number']
-        # password = data['password']
+        password = data['password']
         plan = data['plan']
         patients = patients_from_json(data['patients'])
-        return Doctor(name, email, username, phone_number, "", plan, patients)
+        return Doctor(name, email, username, phone_number, password, plan, patients)
 
     def to_json(self, ):
         # code that map from object into json(dict)
         doctor = {
-            'registered_date': self.registered_date,
+
             'name': self.name,
             'email': self.email,
             'username': self.username,
@@ -59,21 +60,21 @@ class Doctor:
 
 class Patient:
 
-    def __init__(self, name, phone_number, status, gender, age, first_fvc=None, first_fvc_date=None,
-                 registered_date=None, xRay_Url=None,
-                 CT_Url=None, CT_date=None, address=None):
+    def __init__(self, name, phone_number, status, gender, firstFvc, age,
+                 registered_date, axial, address, notes, fvcWeek, percent):
         self.name = name
         self.phone_number = phone_number
         self.status = status
         self.gender = gender
-        self.first_fvc = first_fvc
+        self.first_fvc = firstFvc
         self.age = age
-        self.first_fvc_date = first_fvc_date
+        self.first_fvc_date = firstFvc
         self.registered_date = registered_date
-        self.xRay_Url = xRay_Url
-        self.CT_Url = CT_Url
-        self.CT_date = CT_date
         self.address = address
+        self.notes = notes
+        self.percent = percent
+        self.axial = axial
+        self.fvcWeek = fvcWeek
 
     @staticmethod
     def from_json(data):
@@ -84,23 +85,13 @@ class Patient:
         age = data['age']
         address = data['address']
         registered_date = data['registered_date']
-        try:
-            first_fvc = data['first_fvc']
-            first_fvc_date = data['first_fvc_date']
-            xRay_Url = data['xRay_Url']
-            CT_Url = data['CT_Url']
-            CT_date = data['CT_date ']
-
-        except:
-            first_fvc = None
-            first_fvc_date = None
-            registered_date = None
-            xRay_Url = None
-            CT_Url = None
-            CT_date = None
-
-        return Patient(name, phone_number, status, gender, age, first_fvc, first_fvc_date, registered_date, xRay_Url,
-                       CT_Url, CT_date, address)
+        axial = data['axial']
+        notes = data['notes']
+        firstFvc = data['first_fvc']
+        fvcWeek = data['fvc_week']
+        percent = data['percent']
+        return Patient(name, phone_number, status, gender, firstFvc, age,
+                       registered_date, axial, address, notes, fvcWeek, percent)
 
     def to_json(self, ):
         # code that map from object into json(dict)
@@ -109,13 +100,13 @@ class Patient:
             'phone_number': self.phone_number,
             'status': self.status,
             'gender': self.gender,
-            'first_fvc': self.first_fvc,
             'age': self.age,
-            'first_fvc_date': self.first_fvc_date,
-            'registered_date': self.registered_date,
-            'xRay_Url': self.xRay_Url,
-            'CT_Url': self.CT_Url,
-            'CT_date': self.CT_date,
             'address': self.address,
+            'registered_date': self.registered_date,
+            'first_fvc': self.first_fvc,
+            'axial': self.axial,
+            'notes': self.notes,
+            'fvc_week': self.fvcWeek,
+            'percent': self.percent
         }
         return patient
